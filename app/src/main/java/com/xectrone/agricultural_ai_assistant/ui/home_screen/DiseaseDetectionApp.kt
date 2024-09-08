@@ -46,11 +46,10 @@ import java.io.IOException
 @Composable
 fun DiseaseDetectionApp(
     selectedImageUri: Uri? = null,
+    detectionResults: List<DiseaseResult>? = null,
     onCaptureImageClick: () -> Unit,
     onSelectImageClick: () -> Unit
 ) {
-    var detectionResults by remember { mutableStateOf<List<DiseaseResult>?>(null) }
-
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -94,5 +93,6 @@ fun DiseaseDetectionApp(
         }
     }
 }
+
 
 

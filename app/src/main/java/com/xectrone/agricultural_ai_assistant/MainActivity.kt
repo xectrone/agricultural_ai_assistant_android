@@ -40,6 +40,8 @@ import java.io.IOException
 
 class MainActivity : ComponentActivity() {
     private var selectedImageUri: Uri? = null
+    private var detectionResults by mutableStateOf<List<DiseaseResult>?>(null)
+
     private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success) {
             selectedImageUri?.let {
@@ -61,6 +63,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DiseaseDetectionApp(
+                selectedImageUri = selectedImageUri,
+                detectionResults = detectionResults,
                 onCaptureImageClick = { captureImage() },
                 onSelectImageClick = { selectImageFromGallery() }
             )
@@ -82,9 +86,11 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun updateImageInUi(uri: Uri) {
+        selectedImageUri = uri
         setContent {
             DiseaseDetectionApp(
                 selectedImageUri = uri,
+                detectionResults = detectionResults,
                 onCaptureImageClick = { captureImage() },
                 onSelectImageClick = { selectImageFromGallery() }
             )
@@ -96,13 +102,14 @@ class MainActivity : ComponentActivity() {
         val contentResolver = context.contentResolver
         val fileDescriptor = contentResolver.openFileDescriptor(uri, "r") ?: return
 
+        Log.d("Upload", "Preparing image for upload")
+
         val requestBody = fileDescriptor.use {
             val inputStream = FileInputStream(it.fileDescriptor)
             val byteArray = inputStream.readBytes()
             byteArray.toRequestBody("image/jpeg".toMediaTypeOrNull())
         }
 
-        // Create a MultipartBody to send the image file
         val multipartBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("image", "image.jpg", requestBody)
@@ -110,9 +117,11 @@ class MainActivity : ComponentActivity() {
 
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("http://127.0.0.1:5000/detect")
+            .url("https://05f3-2401-4900-1c2c-380b-7998-5517-7f91-59bc.ngrok-free.app/detect")
             .post(multipartBody)
             .build()
+
+        Log.d("Upload", "Sending request to server")
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
@@ -120,11 +129,14 @@ class MainActivity : ComponentActivity() {
             }
 
             override fun onResponse(call: Call, response: Response) {
+                Log.d("Upload", "Received response from server")
+
                 if (response.isSuccessful) {
                     response.body?.string()?.let { responseBody ->
                         val results = parseResults(responseBody)
                         runOnUiThread {
-                            // Update UI with the detection results
+                            Log.d("Upload", "Results: $results")
+                            detectionResults = results // Update the state
                         }
                     }
                 } else {
@@ -139,7 +151,6 @@ class MainActivity : ComponentActivity() {
         return File.createTempFile("temp_image", ".jpg", storageDir)
     }
 
-    // Parse JSON response from server
     private fun parseResults(json: String): List<DiseaseResult> {
         val jsonArray = JSONObject(json).getJSONArray("results")
         val results = mutableListOf<DiseaseResult>()
@@ -155,6 +166,4 @@ class MainActivity : ComponentActivity() {
         return results
     }
 }
-
-
 
