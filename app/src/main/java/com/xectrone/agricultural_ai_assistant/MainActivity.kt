@@ -1,7 +1,5 @@
 package com.xectrone.agricultural_ai_assistant
 
-import android.app.Activity
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -9,26 +7,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
-import com.xectrone.agricultural_ai_assistant.ui.home_screen.CAMERA_REQUEST_CODE
 import com.xectrone.agricultural_ai_assistant.ui.home_screen.DiseaseDetectionApp
-import com.xectrone.agricultural_ai_assistant.ui.home_screen.GALLERY_REQUEST_CODE
 import com.xectrone.agricultural_ai_assistant.ui.theme.AgriculturalAIAssistantTheme
 import java.io.File
-import android.content.Context
-import android.provider.MediaStore
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.text.font.FontWeight
-import coil.compose.AsyncImage
 import com.xectrone.agricultural_ai_assistant.ui.home_screen.DiseaseResult
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -62,12 +44,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            DiseaseDetectionApp(
-                selectedImageUri = selectedImageUri,
-                detectionResults = detectionResults,
-                onCaptureImageClick = { captureImage() },
-                onSelectImageClick = { selectImageFromGallery() }
-            )
+            AgriculturalAIAssistantTheme(){
+                DiseaseDetectionApp(
+                    selectedImageUri = selectedImageUri,
+                    detectionResults = detectionResults,
+                    onCaptureImageClick = { captureImage() },
+                    onSelectImageClick = { selectImageFromGallery() }
+                )
+            }
         }
     }
 
@@ -88,12 +72,14 @@ class MainActivity : ComponentActivity() {
     private fun updateImageInUi(uri: Uri) {
         selectedImageUri = uri
         setContent {
-            DiseaseDetectionApp(
-                selectedImageUri = uri,
-                detectionResults = detectionResults,
-                onCaptureImageClick = { captureImage() },
-                onSelectImageClick = { selectImageFromGallery() }
-            )
+            AgriculturalAIAssistantTheme() {
+                DiseaseDetectionApp(
+                    selectedImageUri = uri,
+                    detectionResults = detectionResults,
+                    onCaptureImageClick = { captureImage() },
+                    onSelectImageClick = { selectImageFromGallery() }
+                )
+            }
         }
     }
 
@@ -117,7 +103,7 @@ class MainActivity : ComponentActivity() {
 
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("https://05f3-2401-4900-1c2c-380b-7998-5517-7f91-59bc.ngrok-free.app/detect")
+            .url("https://e3da-2401-4900-1c2d-7e25-bc22-5fb5-a6aa-dc66.ngrok-free.app/detect")
             .post(multipartBody)
             .build()
 
@@ -157,10 +143,20 @@ class MainActivity : ComponentActivity() {
 
         for (i in 0 until jsonArray.length()) {
             val item = jsonArray.getJSONObject(i)
+            val label = item.getString("label")
             val confidence = item.getString("confidence")
             val description = item.getString("description")
-            val label = item.getString("label")
-            results.add(DiseaseResult(confidence, description, label))
+            val cause = item.getString("cause")
+            val treatment = item.getString("treatment")
+            val prevention = item.getString("prevention")
+
+            results.add(DiseaseResult(
+                label = label,
+                confidence = confidence,
+                description = description,
+                cause = cause,
+                treatment = treatment,
+                prevention = prevention))
         }
 
         return results

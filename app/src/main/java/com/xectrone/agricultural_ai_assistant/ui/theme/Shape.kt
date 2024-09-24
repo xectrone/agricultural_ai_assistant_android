@@ -1,4 +1,4 @@
-package com.xectrone.remup.ui.theme
+package com.xectrone.agricultural_ai_assistant.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes
