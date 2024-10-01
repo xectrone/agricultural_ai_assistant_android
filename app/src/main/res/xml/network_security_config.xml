@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="true">b78d-2401-4900-1c2c-380b-e991-c18-eeef-2332.ngrok-free.app</domain>
+        <domain includeSubdomains="true">agricultural-ai-assistant.onrender.com/</domain>
     </domain-config>
 </network-security-config>

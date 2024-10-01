@@ -18,6 +18,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.FileInputStream
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 
 class MainActivity : ComponentActivity() {
@@ -101,9 +102,14 @@ class MainActivity : ComponentActivity() {
             .addFormDataPart("image", "image.jpg", requestBody)
             .build()
 
-        val client = OkHttpClient()
+        val client = OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .build()
+
         val request = Request.Builder()
-            .url("https://e3da-2401-4900-1c2d-7e25-bc22-5fb5-a6aa-dc66.ngrok-free.app/detect")
+            .url("https://agricultural-ai-assistant.onrender.com/detect")
             .post(multipartBody)
             .build()
 
