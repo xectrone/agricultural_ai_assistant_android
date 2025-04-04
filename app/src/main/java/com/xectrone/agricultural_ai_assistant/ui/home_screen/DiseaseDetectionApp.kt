@@ -3,6 +3,7 @@ package com.xectrone.agricultural_ai_assistant.ui.home_screen
 
 import android.net.Uri
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,9 +22,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
@@ -59,9 +63,10 @@ fun DiseaseDetectionApp(
     onCaptureImageClick: () -> Unit,
     onSelectImageClick: () -> Unit,
     search: Boolean,
+    selectedLanguage: String,
+    onLanguageSelected: (String) -> Unit,
     onBack: () -> Unit
 ) {
-
 
     Column(
         modifier = Modifier
@@ -72,32 +77,25 @@ fun DiseaseDetectionApp(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
-        if (!search){
+        if (!search) {
             Image(
                 modifier = Modifier.padding(top = 85.dp),
                 painter = painterResource(id = R.drawable.boy),
                 contentDescription = ""
-
             )
 
-
             Text(
-                modifier = Modifier,
                 text = "Agricultural AI Assistant ",
                 style = MaterialTheme.typography.h3,
                 color = Green1,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
                 fontFamily = Rubic,
-
-                )
+            )
 
             Spacer(modifier = Modifier.height(28.dp))
 
-
-
             Text(
-                modifier = Modifier,
                 text = "Upload or capture an image to get disease plant detection results",
                 color = Green2,
                 style = MaterialTheme.typography.body1,
@@ -106,24 +104,48 @@ fun DiseaseDetectionApp(
                 fontFamily = Rubic,
             )
 
+            // 🟡 Language Dropdown Menu
+            Spacer(modifier = Modifier.height(20.dp))
 
+            var expanded by remember { mutableStateOf(false) }
+            val languages = listOf("English" to "en", "Hindi" to "hi", "Marathi" to "mr")
+            val selected = languages.find { it.second == selectedLanguage }?.first ?: "Select Language"
 
+            Box {
+                OutlinedButton(
+                    border = BorderStroke(width = 1.dp, color = Green2),
+                    onClick = { expanded = true }
+                ) {
+                    Text(text = selected, fontFamily = Rubic, color = Green2)
+                }
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    languages.forEach { (name, code) ->
+                        DropdownMenuItem(onClick = {
+                            onLanguageSelected(code)
+                            expanded = false
+                        }) {
+                            Text(text = name)
+                        }
+                    }
+                }
+            }
+
+            // 🔽 Buttons Row
             Row(
                 modifier = Modifier.padding(top = 38.dp)
             ) {
-
                 IconButton(
                     modifier = Modifier
                         .height(47.dp)
                         .width(101.dp)
-                        .background(Green1, RoundedCornerShape(13.dp))
-                    ,
-                    onClick = {
-                        onSelectImageClick()
-
-                    }
+                        .background(Green1, RoundedCornerShape(13.dp)),
+                    onClick = { onSelectImageClick() }
                 ) {
-                    Icon(painterResource(id =  R.drawable.round_upload_24), contentDescription = "", tint = Color.White)
+                    Icon(painterResource(id = R.drawable.round_upload_24), contentDescription = "", tint = Color.White)
                 }
 
                 Spacer(modifier = Modifier.width(25.dp))
@@ -133,16 +155,12 @@ fun DiseaseDetectionApp(
                         .height(47.dp)
                         .width(101.dp)
                         .background(Green1, RoundedCornerShape(13.dp)),
-                    onClick = {
-                        onCaptureImageClick()
-                    }
+                    onClick = { onCaptureImageClick() }
                 ) {
-                    Icon(painterResource(id =  R.drawable.round_photo_camera_24), contentDescription = "", tint = Color.White)
+                    Icon(painterResource(id = R.drawable.round_photo_camera_24), contentDescription = "", tint = Color.White)
                 }
             }
-        }
-        else{
-
+        } else {
             Spacer(modifier = Modifier.height(30.dp))
             IconButton(
                 modifier = Modifier
@@ -150,14 +168,12 @@ fun DiseaseDetectionApp(
                     .width(101.dp)
                     .background(Green1, RoundedCornerShape(13.dp))
                     .align(Alignment.Start),
-                onClick = {
-                    onBack()
-                }
+                onClick = { onBack() }
             ) {
                 Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = "", tint = Color.White)
             }
-        Spacer(modifier = Modifier.height(30.dp))
 
+            Spacer(modifier = Modifier.height(30.dp))
 
             selectedImageUri?.let { uri ->
                 AsyncImage(
@@ -176,12 +192,9 @@ fun DiseaseDetectionApp(
 
             Spacer(modifier = Modifier.height(Dimen.Padding.p7))
 
-//            ResponseItems(test)
-
             detectionResults?.let { results ->
                 ResponseItems(result = results.first())
             }
-
         }
     }
 }

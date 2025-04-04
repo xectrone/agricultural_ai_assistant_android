@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
     private var selectedImageUri: Uri? = null
     private var detectionResults by mutableStateOf<List<DiseaseResult>?>(null)
     private var search by mutableStateOf(false)
-
+    private var selectedLanguage by mutableStateOf("en") // 🔹 Added
 
     private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success) {
@@ -47,13 +47,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AgriculturalAIAssistantTheme(){
+            AgriculturalAIAssistantTheme() {
                 DiseaseDetectionApp(
                     selectedImageUri = selectedImageUri,
                     detectionResults = detectionResults,
                     onCaptureImageClick = { captureImage() },
                     onSelectImageClick = { selectImageFromGallery() },
                     search = search,
+                    selectedLanguage = selectedLanguage, // 🔹 Passed
+                    onLanguageSelected = { selectedLanguage = it }, // 🔹 Passed
                     onBack = { onBack() }
                 )
             }
@@ -86,8 +88,9 @@ class MainActivity : ComponentActivity() {
                     onCaptureImageClick = { captureImage() },
                     onSelectImageClick = { selectImageFromGallery() },
                     search = search,
+                    selectedLanguage = selectedLanguage, // 🔹 Passed
+                    onLanguageSelected = { selectedLanguage = it }, // 🔹 Passed
                     onBack = { onBack() }
-
                 )
             }
         }
@@ -109,6 +112,7 @@ class MainActivity : ComponentActivity() {
         val multipartBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("image", "image.jpg", requestBody)
+            .addFormDataPart("lang", selectedLanguage) // 🔥 Include selected language
             .build()
 
         val client = OkHttpClient.Builder()
@@ -123,6 +127,7 @@ class MainActivity : ComponentActivity() {
             .build()
 
         Log.d("Upload", "Sending request to server")
+        Log.d("#TAG", "uploadImageAndDetectDisease: $selectedLanguage")
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
@@ -137,7 +142,7 @@ class MainActivity : ComponentActivity() {
                         val results = parseResults(responseBody)
                         runOnUiThread {
                             Log.d("Upload", "Results: $results")
-                            detectionResults = results // Update the state
+                            detectionResults = results
                         }
                     }
                 } else {
@@ -165,18 +170,23 @@ class MainActivity : ComponentActivity() {
             val treatment = item.getString("treatment")
             val prevention = item.getString("prevention")
 
-            results.add(DiseaseResult(
-                label = label,
-                confidence = confidence,
-                description = description,
-                cause = cause,
-                treatment = treatment,
-                prevention = prevention))
+            results.add(
+                DiseaseResult(
+                    label = label,
+                    confidence = confidence,
+                    description = description,
+                    cause = cause,
+                    treatment = treatment,
+                    prevention = prevention
+                )
+            )
         }
 
         return results
     }
 
-    private fun onBack(){search = false}
+    private fun onBack() {
+        search = false
+    }
 }
 
