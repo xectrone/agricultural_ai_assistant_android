@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit
 class MainActivity : ComponentActivity() {
     private var selectedImageUri: Uri? = null
     private var detectionResults by mutableStateOf<List<DiseaseResult>?>(null)
+    private var search by mutableStateOf(false)
+
 
     private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success) {
@@ -50,13 +52,16 @@ class MainActivity : ComponentActivity() {
                     selectedImageUri = selectedImageUri,
                     detectionResults = detectionResults,
                     onCaptureImageClick = { captureImage() },
-                    onSelectImageClick = { selectImageFromGallery() }
+                    onSelectImageClick = { selectImageFromGallery() },
+                    search = search,
+                    onBack = { onBack() }
                 )
             }
         }
     }
 
     private fun captureImage() {
+        search = true
         val photoFile = createImageFile()
         selectedImageUri = FileProvider.getUriForFile(
             this,
@@ -67,6 +72,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun selectImageFromGallery() {
+        search = true
         galleryLauncher.launch("image/*")
     }
 
@@ -78,7 +84,10 @@ class MainActivity : ComponentActivity() {
                     selectedImageUri = uri,
                     detectionResults = detectionResults,
                     onCaptureImageClick = { captureImage() },
-                    onSelectImageClick = { selectImageFromGallery() }
+                    onSelectImageClick = { selectImageFromGallery() },
+                    search = search,
+                    onBack = { onBack() }
+
                 )
             }
         }
@@ -167,5 +176,7 @@ class MainActivity : ComponentActivity() {
 
         return results
     }
+
+    private fun onBack(){search = false}
 }
 

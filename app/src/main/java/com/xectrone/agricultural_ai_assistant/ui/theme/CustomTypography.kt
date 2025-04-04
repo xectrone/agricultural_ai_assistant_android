@@ -33,13 +33,13 @@ object CustomTypography {
 
     val title = TextStyle(
         fontWeight = FontWeight.Medium,
-        fontSize = 24.sp,
+        fontSize = 20.sp,
         letterSpacing = 0.15.sp
     )
 
     val titleSecondary = TextStyle(
         fontWeight = FontWeight.Medium,
-        fontSize = 20.sp,
+        fontSize = 18.sp,
         letterSpacing = 0.15.sp
     )
 
