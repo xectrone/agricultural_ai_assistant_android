@@ -26,6 +26,8 @@ class MainActivity : ComponentActivity() {
     private var detectionResults by mutableStateOf<List<DiseaseResult>?>(null)
     private var search by mutableStateOf(false)
     private var selectedLanguage by mutableStateOf("en") // 🔹 Added
+    private var loading by mutableStateOf(false)
+
 
     private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
         if (success) {
@@ -54,6 +56,7 @@ class MainActivity : ComponentActivity() {
                     onCaptureImageClick = { captureImage() },
                     onSelectImageClick = { selectImageFromGallery() },
                     search = search,
+                    loading = loading,
                     selectedLanguage = selectedLanguage, // 🔹 Passed
                     onLanguageSelected = { selectedLanguage = it }, // 🔹 Passed
                     onBack = { onBack() }
@@ -88,6 +91,7 @@ class MainActivity : ComponentActivity() {
                     onCaptureImageClick = { captureImage() },
                     onSelectImageClick = { selectImageFromGallery() },
                     search = search,
+                    loading = loading,
                     selectedLanguage = selectedLanguage, // 🔹 Passed
                     onLanguageSelected = { selectedLanguage = it }, // 🔹 Passed
                     onBack = { onBack() }
@@ -100,6 +104,8 @@ class MainActivity : ComponentActivity() {
         val context = this
         val contentResolver = context.contentResolver
         val fileDescriptor = contentResolver.openFileDescriptor(uri, "r") ?: return
+
+        loading = true // ⏳ Start loading
 
         Log.d("Upload", "Preparing image for upload")
 
@@ -129,9 +135,11 @@ class MainActivity : ComponentActivity() {
         Log.d("Upload", "Sending request to server")
         Log.d("#TAG", "uploadImageAndDetectDisease: $selectedLanguage")
 
+
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 Log.e("Upload Error", "Failed to upload image: ${e.message}")
+                runOnUiThread { loading = false } // 🛑 Stop loading on failure
             }
 
             override fun onResponse(call: Call, response: Response) {
@@ -143,10 +151,12 @@ class MainActivity : ComponentActivity() {
                         runOnUiThread {
                             Log.d("Upload", "Results: $results")
                             detectionResults = results
+                            loading = false // ✅ Stop loading on success
                         }
                     }
                 } else {
                     Log.e("Upload Error", "Server error: ${response.message}")
+                    runOnUiThread { loading = false } // 🛑 Stop loading on error
                 }
             }
         })
