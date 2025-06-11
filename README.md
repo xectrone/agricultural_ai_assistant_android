@@ -7,7 +7,7 @@ An Android-based plant disease detection app using AI and Computer Vision. Users
 
 ## 📱 Download
 
-🔗 [Download APK from Google Drive](https://drive.google.com/file/d/1Mn2iU0YmMxvSwKZYrOXT4e6qbDrBjtOq/view?usp=drive_link)
+🔗 [Download APK from Google Drive](https://drive.google.com/uc?export=download&id=1m_54ogPYhDe4Hd6fZRy0ghef0ps7QZZO)
 
 
 ## 🎓 Academic Information
@@ -130,7 +130,7 @@ Endpoints used:
 - `POST /auth/login` & `/auth/register` → Auth
 
 👉 Backend code available here:  
-[https://github.com/xectrone/agricultural_ai_assistant_backend](https://github.com/xectrone/agricultural_ai_assistant_backend)
+[https://github.com/xectrone/agricultural_ai_assistant](https://github.com/xectrone/agricultural_ai_assistant)
 
 
 ## 📥 Additional Features
@@ -150,7 +150,7 @@ https://agricultural-ai-assistant.onrender.com/
 ```
 
 APK available for download from:  
-🔗 [Google Drive APK Link](https://drive.google.com/file/d/1Mn2iU0YmMxvSwKZYrOXT4e6qbDrBjtOq/view?usp=drive_link)
+🔗 [Google Drive APK Link](https://drive.google.com/uc?export=download&id=1m_54ogPYhDe4Hd6fZRy0ghef0ps7QZZO)
 
 
 ## 🚧 Future Improvements
@@ -162,4 +162,4 @@ APK available for download from:
 
 ## 📄 License
 
-This project is licensed under the **MIT License**.  See the [LICENSE](https://chatgpt.com/c/LICENSE) file for full details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
