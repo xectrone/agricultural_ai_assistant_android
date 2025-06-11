@@ -1,4 +1,4 @@
-# 🌿 Agricultural AI Assistant — Android App
+# 🌿 Agricultural AI Assistant Android App
 
 ![Kotlin](https://img.shields.io/badge/Kotlin-1.8.10-blue.svg)  ![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-UI-green.svg)  ![Room](https://img.shields.io/badge/Room-Database-orange.svg)  ![Multilingual](https://img.shields.io/badge/Multilingual-English%2C%20Hindi%2C%20Marathi-brightgreen.svg)  ![Version](https://img.shields.io/badge/Version-1.0.0-brightgreen.svg)
 
